@@ -19,17 +19,17 @@ export default function Chatbot() {
 
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/ai/todo/process`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            message: input,
-          }),
-        }
-      );
+  `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/ai/todo/process`,
+  {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      user_id: 'amber@example.com', // logged-in user
+      user_input: input,            // user message
+    }),
+  }
+);
+
 
       if (!res.ok) {
         throw new Error(`HTTP error! status: ${res.status}`);

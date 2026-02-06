@@ -14,22 +14,22 @@ export default function Chatbot() {
   const handleSend = async () => {
     if (!input.trim()) return;
 
-    // show user message
+    // Show user message
     setMessages(prev => [...prev, { sender: 'user', text: input }]);
 
     try {
+      // Call backend API
       const res = await fetch(
-  `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/ai/todo/process`,
-  {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      user_id: 'amber@example.com', // logged-in user
-      user_input: input,            // user message
-    }),
-  }
-);
-
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/ai/todo/process`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            user_id: 'amber@example.com', // Hardcoded for testing / replace with actual logged-in user
+            user_input: input,
+          }),
+        }
+      );
 
       if (!res.ok) {
         throw new Error(`HTTP error! status: ${res.status}`);
@@ -37,9 +37,10 @@ export default function Chatbot() {
 
       const data = await res.json();
 
+      // Flexible AI response handling
       setMessages(prev => [
         ...prev,
-        { sender: 'ai', text: data.message || 'AI did not respond' },
+        { sender: 'ai', text: data.message || data.output || 'AI did not respond' },
       ]);
     } catch (error) {
       console.error('Chat error:', error);
@@ -54,6 +55,7 @@ export default function Chatbot() {
 
   return (
     <>
+      {/* Chatbot Icon */}
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
@@ -74,6 +76,7 @@ export default function Chatbot() {
         </button>
       )}
 
+      {/* Chatbox */}
       {isOpen && (
         <div
           style={{
@@ -90,6 +93,7 @@ export default function Chatbot() {
             zIndex: 1000,
           }}
         >
+          {/* Header */}
           <div
             style={{
               padding: 10,
@@ -103,6 +107,7 @@ export default function Chatbot() {
             <button onClick={() => setIsOpen(false)}>✖️</button>
           </div>
 
+          {/* Messages */}
           <div style={{ padding: 10, flex: 1, overflowY: 'auto' }}>
             {messages.length === 0
               ? 'Welcome! Type a command like "add buy groceries".'
@@ -124,6 +129,7 @@ export default function Chatbot() {
                 ))}
           </div>
 
+          {/* Input */}
           <div style={{ display: 'flex', borderTop: '1px solid #eee' }}>
             <input
               value={input}

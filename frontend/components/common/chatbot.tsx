@@ -19,7 +19,7 @@ export default function Chatbot() {
 
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/chat`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/ai/todo/process`,
         {
           method: 'POST',
           headers: {

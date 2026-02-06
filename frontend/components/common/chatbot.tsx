@@ -25,7 +25,7 @@ export default function Chatbot() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            user_id: 'amber@example.com', // Hardcoded for testing / replace with actual logged-in user
+            user_id: 'amber@example.com', // Replace with actual logged-in user
             user_input: input,
           }),
         }
@@ -117,8 +117,7 @@ export default function Chatbot() {
                     style={{
                       textAlign: msg.sender === 'user' ? 'right' : 'left',
                       margin: '6px 0',
-                      background:
-                        msg.sender === 'user' ? '#DCF8C6' : '#F1F0F0',
+                      background: msg.sender === 'user' ? '#DCF8C6' : '#F1F0F0',
                       padding: '6px 10px',
                       borderRadius: 8,
                       maxWidth: '80%',

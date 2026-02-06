@@ -1,4 +1,3 @@
-
 'use client';
 import { useState } from 'react';
 
@@ -12,30 +11,38 @@ export default function Chatbot() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
 
-  const user_id = 'amber@example.com'; // Replace with logged-in user
-
   const handleSend = async () => {
     if (!input.trim()) return;
 
-    // Show user message
+    // show user message
     setMessages(prev => [...prev, { sender: 'user', text: input }]);
 
     try {
-      // Call backend API
-      const res = await fetch('http://172.25.112.1:8000/api/v1/ai/todo/process', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ user_id, user_input: input }),
-});
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/chat`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            message: input,
+          }),
+        }
+      );
+
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
 
       const data = await res.json();
 
-      // Show AI response
       setMessages(prev => [
         ...prev,
         { sender: 'ai', text: data.message || 'AI did not respond' },
       ]);
-    } catch (err) {
+    } catch (error) {
+      console.error('Chat error:', error);
       setMessages(prev => [
         ...prev,
         { sender: 'ai', text: 'Server error, please try again!' },
@@ -47,7 +54,6 @@ export default function Chatbot() {
 
   return (
     <>
-      {/* Chatbot Icon */}
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
@@ -60,9 +66,6 @@ export default function Chatbot() {
             borderRadius: '50%',
             width: 50,
             height: 50,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
             cursor: 'pointer',
             zIndex: 1000,
           }}
@@ -71,7 +74,6 @@ export default function Chatbot() {
         </button>
       )}
 
-      {/* Chatbox */}
       {isOpen && (
         <div
           style={{
@@ -88,14 +90,12 @@ export default function Chatbot() {
             zIndex: 1000,
           }}
         >
-          {/* Header with close button */}
           <div
             style={{
               padding: 10,
               borderBottom: '1px solid #eee',
               display: 'flex',
               justifyContent: 'space-between',
-              alignItems: 'center',
               fontWeight: 'bold',
             }}
           >
@@ -103,7 +103,6 @@ export default function Chatbot() {
             <button onClick={() => setIsOpen(false)}>✖️</button>
           </div>
 
-          {/* Messages */}
           <div style={{ padding: 10, flex: 1, overflowY: 'auto' }}>
             {messages.length === 0
               ? 'Welcome! Type a command like "add buy groceries".'
@@ -112,10 +111,11 @@ export default function Chatbot() {
                     key={i}
                     style={{
                       textAlign: msg.sender === 'user' ? 'right' : 'left',
-                      margin: '4px 0',
-                      background: msg.sender === 'user' ? '#DCF8C6' : '#F1F0F0',
+                      margin: '6px 0',
+                      background:
+                        msg.sender === 'user' ? '#DCF8C6' : '#F1F0F0',
                       padding: '6px 10px',
-                      borderRadius: '8px',
+                      borderRadius: 8,
                       maxWidth: '80%',
                     }}
                   >
@@ -124,10 +124,8 @@ export default function Chatbot() {
                 ))}
           </div>
 
-          {/* Input */}
           <div style={{ display: 'flex', borderTop: '1px solid #eee' }}>
             <input
-              type="text"
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleSend()}
@@ -152,4 +150,3 @@ export default function Chatbot() {
     </>
   );
 }
-

@@ -1,0 +1,126 @@
+openapi: 3.0.3
+info:
+  title: AI Todo Assistant API
+  description: API for the AI-powered Todo Assistant that processes natural language commands and interacts with tasks via MCP tools.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8000
+    description: Local development server
+
+paths:
+  /api/v1/ai/todo/process:
+    post:
+      summary: Process natural language command for todo management
+      description: Accepts a natural language command and processes it using appropriate MCP tools
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NaturalLanguageCommand'
+      responses:
+        '200':
+          description: Successful processing of the command
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommandResponse'
+        '400':
+          description: Invalid request format or unrecognized command
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error during command processing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    NaturalLanguageCommand:
+      type: object
+      required:
+        - user_input
+        - user_id
+      properties:
+        user_input:
+          type: string
+          description: The natural language command from the user
+          example: "add buy groceries"
+        user_id:
+          type: string
+          description: The ID of the user making the request
+          example: "user_12345"
+        conversation_context:
+          type: object
+          description: Optional conversation history for context
+          properties: {}
+
+    CommandResponse:
+      type: object
+      required:
+        - success
+        - message
+        - action_taken
+      properties:
+        success:
+          type: boolean
+          description: Whether the command was processed successfully
+        message:
+          type: string
+          description: Human-readable response to the user
+        action_taken:
+          type: string
+          description: The action that was taken (add, list, complete, delete, update)
+        tasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/Task'
+        mcp_response:
+          type: object
+          description: Raw response from the MCP tool that was called
+
+    Task:
+      type: object
+      required:
+        - id
+        - description
+        - completed
+        - created_at
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the task
+        description:
+          type: string
+          description: Description of the task
+        completed:
+          type: boolean
+          description: Whether the task is completed
+        created_at:
+          type: string
+          format: date-time
+          description: When the task was created
+        updated_at:
+          type: string
+          format: date-time
+          description: When the task was last updated
+
+    ErrorResponse:
+      type: object
+      required:
+        - success
+        - error
+      properties:
+        success:
+          type: boolean
+          description: Always false for error responses
+        error:
+          type: string
+          description: Description of the error
+        message:
+          type: string
+          description: Human-readable error message
